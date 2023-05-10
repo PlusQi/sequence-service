@@ -36,11 +36,20 @@ public class SequenceContainer {
 
     /**
      * 是否需要增大序列最大值，(最大序列值-当前序列值)/序列增长步长 不足10%时，需要增加序列最大值
-     * @return
+     * @return true - 序列长度超过阈值，需要增大最大序列值，fasle - 不需要增大序列最大值
      */
-    public boolean couldIncrement() {
-
+    public Boolean needIncrementMaxValue() {
+        if ((1d * (this.seqStepMaxValue - this.atomicSeq.get()) / this.sequenceInfo.getIncrementStep()) < 0.1d) {
+            return true;
+        }
         return false;
+    }
+
+    /**
+     * @return 序列长度
+     */
+    public Integer sequenceLength() {
+        return this.sequenceInfo.getSeqLength();
     }
 
 }
