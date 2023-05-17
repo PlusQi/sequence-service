@@ -28,6 +28,9 @@ public class SequenceServiceImpl implements InitializingBean, SequenceService {
     @Resource
     private SequenceInfoService sequenceInfoService;
 
+    @Resource
+    private TransactionalServiceImpl transactionalService;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         // 获取所有类型的序列号生成规则配置
@@ -41,8 +44,9 @@ public class SequenceServiceImpl implements InitializingBean, SequenceService {
                     throw new RuntimeException("配置项：{" + sequenceType + "} 相关枚举未配置");
                 }
 
-                // todo 当前序列值按步长增加
-                ;
+                // 序列值按步长增长，当前应用得到的是增长前的序列值——增长后的序列值之间的数值
+                // 适配分布式环境，不同会获取到不同的序列值数值段
+                sequenceInfo = transactionalService.incrementSequenceStep(sequenceInfo);
                 SequenceContainer sequenceContainer = new SequenceContainer();
                 // 设置序列开始原子值
                 sequenceContainer.setAtomicSeq(new AtomicLong(sequenceInfo.getSeqValue()));
